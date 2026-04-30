@@ -3,7 +3,9 @@ package com.example.plantera.data.bed
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface BedDao {
@@ -15,4 +17,7 @@ interface BedDao {
 
     @Delete
     suspend fun delete(bed: Bed)
+
+    @Query("SELECT * FROM beds ORDER BY id DESC")
+    fun getAllBeds(): Flow<List<Bed>>
 }

@@ -35,7 +35,6 @@ abstract class GardenDatabase : RoomDatabase() {
                     GardenDatabase::class.java,
                     "garden.db"
                 )
-                    .createFromAsset("garden.db")
                     .fallbackToDestructiveMigration(false)
                     .build()
                 INSTANCE = instance

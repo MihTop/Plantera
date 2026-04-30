@@ -10,6 +10,7 @@ import com.example.plantera.data.plant.Plant
 import com.example.plantera.data.plant.PlantDao
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
+import kotlinx.coroutines.flow.Flow
 
 @Singleton
 class GardenRepository @Inject constructor(
@@ -22,19 +23,36 @@ class GardenRepository @Inject constructor(
     suspend fun insertBed(bed: Bed) = bedDao.insert(bed)
     suspend fun updateBed(bed: Bed) = bedDao.update(bed)
     suspend fun deleteBed(bed: Bed) = bedDao.delete(bed)
+    fun getAllBeds(): Flow<List<Bed>> = bedDao.getAllBeds()
 
     // Методы растений
     suspend fun insertPlant(plant: Plant) = plantDao.insert(plant)
     suspend fun updatePlant(plant: Plant) = plantDao.update(plant)
     suspend fun deletePlant(plant: Plant) = plantDao.delete(plant)
+    fun getAllPlants(): Flow<List<Plant>> = plantDao.getAllPlants()
 
     // Методы вредителей
     suspend fun insertPest(pest: Pest) = pestDao.insert(pest)
     suspend fun updatePest(pest: Pest) = pestDao.update(pest)
     suspend fun deletePest(pest: Pest) = pestDao.delete(pest)
+    fun getAllPests(): Flow<List<Pest>> = pestDao.getAllPests()
 
     // Методы удобрений
     suspend fun insertFertilizer(fertilizer: Fertilizer) = fertilizerDao.insert(fertilizer)
     suspend fun updateFertilizer(fertilizer: Fertilizer) = fertilizerDao.update(fertilizer)
     suspend fun deleteFertilizer(fertilizer: Fertilizer) = fertilizerDao.delete(fertilizer)
+    fun getAllFertilizers(): Flow<List<Fertilizer>> = fertilizerDao.getAllFertilizers()
+
+    // Заполнение БД
+    suspend fun populateBD(){
+        insertBed(Bed(0,"Один","17.12.2000",12,12))
+        insertBed(Bed(0,"Два","11.11.1111",3,2))
+        insertPlant(Plant(0,"Капуста","Вкусная","https:ss"))
+        insertPlant(Plant(0,"Мангуста","Быстрая","https:ss"))
+        insertPest(Pest(0,"Картофелеед","Кушает картошку","Купить мышь", "https:ass"))
+        insertPest(Pest(0,"Гниение","Убивает растение","Меньше поливать", "https:ass"))
+        insertFertilizer(Fertilizer(0,"Сода"))
+        insertFertilizer(Fertilizer(0,"Сера"))
+    }
+
 }
