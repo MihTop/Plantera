@@ -20,4 +20,7 @@ interface PestDao {
 
     @Query("SELECT * FROM pests ORDER BY id DESC")
     fun getAllPests(): Flow<List<Pest>>
+
+    @Query("SELECT * FROM pests WHERE id=:pestId")
+    fun getPestById(pestId: Int): Flow<Pest?>
 }

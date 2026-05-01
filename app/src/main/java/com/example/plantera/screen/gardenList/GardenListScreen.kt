@@ -63,6 +63,7 @@ fun GardenListScreen(
                         colors = CardDefaults.cardColors(
                             containerColor = Color(0xFF98FA9F)
                         ),
+                        onClick = { navController.navigate("bed_info_screen/${bed.id}") },
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Text(bed.name)

@@ -3,11 +3,16 @@ package com.example.plantera.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.example.plantera.screen.gardenInfo.GardenInfoScreen
 import com.example.plantera.screen.gardenList.GardenListScreen
 import com.example.plantera.screen.pestBook.PestBookScreen
+import com.example.plantera.screen.pestInfo.PestInfoScreen
 import com.example.plantera.screen.plantBook.PlantBookScreen
+import com.example.plantera.screen.plantInfo.PlantInfoScreen
 
 @Composable
 fun NavGraph(
@@ -27,6 +32,30 @@ fun NavGraph(
         }
         composable(route = Screens.GardenList.route) {
             GardenListScreen(navController)
+        }
+        composable(
+            route = Screens.PlantInfo.route,
+            arguments = listOf(navArgument("plantId") { type = NavType.IntType })
+        ) {
+            PlantInfoScreen(
+                navController = navController
+            )
+        }
+        composable(
+            route = Screens.PestInfo.route,
+            arguments = listOf(navArgument("pestId") { type = NavType.IntType })
+        ) {
+            PestInfoScreen(
+                navController = navController
+            )
+        }
+        composable(
+            route = Screens.BedInfo.route,
+            arguments = listOf(navArgument("bedId") { type = NavType.IntType })
+        ) {
+            GardenInfoScreen(
+                navController = navController
+            )
         }
     }
 }

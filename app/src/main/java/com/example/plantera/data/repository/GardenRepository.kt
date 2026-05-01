@@ -24,18 +24,21 @@ class GardenRepository @Inject constructor(
     suspend fun updateBed(bed: Bed) = bedDao.update(bed)
     suspend fun deleteBed(bed: Bed) = bedDao.delete(bed)
     fun getAllBeds(): Flow<List<Bed>> = bedDao.getAllBeds()
+    fun getBedById(bedId: Int): Flow<Bed?> = bedDao.getBedById(bedId)
 
     // Методы растений
     suspend fun insertPlant(plant: Plant) = plantDao.insert(plant)
     suspend fun updatePlant(plant: Plant) = plantDao.update(plant)
     suspend fun deletePlant(plant: Plant) = plantDao.delete(plant)
     fun getAllPlants(): Flow<List<Plant>> = plantDao.getAllPlants()
+    fun getPlantById(plantId: Int): Flow<Plant?> = plantDao.getPlantById(plantId)
 
     // Методы вредителей
     suspend fun insertPest(pest: Pest) = pestDao.insert(pest)
     suspend fun updatePest(pest: Pest) = pestDao.update(pest)
     suspend fun deletePest(pest: Pest) = pestDao.delete(pest)
     fun getAllPests(): Flow<List<Pest>> = pestDao.getAllPests()
+    fun getPestById(pestId: Int): Flow<Pest?> = pestDao.getPestById(pestId)
 
     // Методы удобрений
     suspend fun insertFertilizer(fertilizer: Fertilizer) = fertilizerDao.insert(fertilizer)

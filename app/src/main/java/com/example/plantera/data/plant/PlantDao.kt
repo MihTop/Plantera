@@ -20,4 +20,7 @@ interface PlantDao {
 
     @Query("SELECT * FROM plants ORDER BY id DESC")
     fun getAllPlants(): Flow<List<Plant>>
+
+    @Query("SELECT * FROM plants WHERE id = :plantId")
+    fun getPlantById(plantId: Int): Flow<Plant>
 }

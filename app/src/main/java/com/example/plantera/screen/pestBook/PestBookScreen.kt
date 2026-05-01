@@ -62,6 +62,7 @@ fun PestBookScreen(
                         colors = CardDefaults.cardColors(
                             containerColor = Color(0xFF98FA9F)
                         ),
+                        onClick = {navController.navigate("pest_info_screen/${pest.id}")},
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Text(pest.name)

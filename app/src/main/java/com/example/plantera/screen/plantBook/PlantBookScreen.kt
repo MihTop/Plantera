@@ -75,6 +75,7 @@ fun PlantBookScreen(
                         colors = CardDefaults.cardColors(
                             containerColor = Color(0xFF98FA9F)
                         ),
+                        onClick = {navController.navigate("plant_info_screen/${plant.id}")},
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Text(plant.name)

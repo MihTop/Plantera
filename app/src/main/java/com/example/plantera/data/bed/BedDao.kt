@@ -20,4 +20,7 @@ interface BedDao {
 
     @Query("SELECT * FROM beds ORDER BY id DESC")
     fun getAllBeds(): Flow<List<Bed>>
+
+    @Query("SELECT * FROM beds WHERE id=:bedId")
+    fun getBedById(bedId: Int): Flow<Bed?>
 }
