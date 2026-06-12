@@ -14,7 +14,10 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,6 +25,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.plantera.navigation.NavGraph
 import com.example.plantera.navigation.Screens
@@ -42,24 +46,37 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun PlanteraApp() {
-    var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.GARDEN_LIST) }
     val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val showNavigation = when (currentRoute) {
+        Screens.PlantInfo.route,
+        Screens.PestInfo.route,
+        Screens.BedInfo.route -> false
+        else -> true
+    }
 
     NavigationSuiteScaffold(
+        layoutType = if (showNavigation) {
+            NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(currentWindowAdaptiveInfo())
+        } else {
+            NavigationSuiteType.None
+        },
         navigationSuiteItems = {
-            AppDestinations.entries.forEach {
+            AppDestinations.entries.forEach { destination ->
                 item(
-                    icon = {
-                        Icon(
-                            it.icon,
-                            contentDescription = it.label
-                        )
-                    },
-                    label = { Text(it.label) },
-                    selected = it == currentDestination,
+                    icon = { Icon(destination.icon, contentDescription = destination.label) },
+                    label = { Text(destination.label) },
+                    selected = currentRoute == destination.nav,
                     onClick = {
-                        currentDestination = it
-                        navController.navigate(it.nav)
+                        navController.navigate(destination.nav) {
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     }
                 )
             }
@@ -79,7 +96,7 @@ enum class AppDestinations(
     val icon: ImageVector,
     val nav: String
 ) {
-    GARDEN_LIST("Garden list", Icons.Default.Home, "gardenList_screen"),
-    PEST("Pests", Icons.Default.BugReport, "pest_screen"),
-    PLANT("Plant", Icons.Default.Forest, "plant_screen"),
+    GARDEN_LIST("Главная", Icons.Default.Home, "gardenList_screen"),
+    PEST("Вредители", Icons.Default.BugReport, "pest_screen"),
+    PLANT("Растения", Icons.Default.Forest, "plant_screen"),
 }
