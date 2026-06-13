@@ -2,6 +2,8 @@ package com.example.plantera.data.repository
 
 import com.example.plantera.data.bed.Bed
 import com.example.plantera.data.bed.BedDao
+import com.example.plantera.data.bedPlant.BedPlant
+import com.example.plantera.data.bedPlant.BedPlantDao
 import com.example.plantera.data.fertilizer.Fertilizer
 import com.example.plantera.data.fertilizer.FertilizerDao
 import com.example.plantera.data.pest.Pest
@@ -17,13 +19,15 @@ class GardenRepository @Inject constructor(
     private val bedDao: BedDao,
     private val plantDao: PlantDao,
     private val pestDao: PestDao,
-    private val fertilizerDao: FertilizerDao
+    private val fertilizerDao: FertilizerDao,
+    private val bedPlantDao: BedPlantDao
 ) {
     // Методы грядок
     suspend fun insertBed(bed: Bed) = bedDao.insert(bed)
     suspend fun updateBed(bed: Bed) = bedDao.update(bed)
     suspend fun deleteBed(bed: Bed) = bedDao.delete(bed)
     fun getAllBeds(): Flow<List<Bed>> = bedDao.getAllBeds()
+    suspend fun getAllBedsList(): List<Bed> = bedDao.getAllBedsList()
     fun getBedById(bedId: Int): Flow<Bed?> = bedDao.getBedById(bedId)
 
     // Методы растений
@@ -45,6 +49,9 @@ class GardenRepository @Inject constructor(
     suspend fun updateFertilizer(fertilizer: Fertilizer) = fertilizerDao.update(fertilizer)
     suspend fun deleteFertilizer(fertilizer: Fertilizer) = fertilizerDao.delete(fertilizer)
     fun getAllFertilizers(): Flow<List<Fertilizer>> = fertilizerDao.getAllFertilizers()
+
+    // Методы растений на грядках
+    suspend fun insertBedPlant(bedPlant: BedPlant) = bedPlantDao.insert(bedPlant)
 
     // Заполнение БД
     suspend fun populateBD(){

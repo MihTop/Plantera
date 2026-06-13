@@ -2,6 +2,7 @@ package com.example.plantera.data.appModule
 
 import android.content.Context
 import com.example.plantera.data.bed.BedDao
+import com.example.plantera.data.bedPlant.BedPlantDao
 import com.example.plantera.data.database.GardenDatabase
 import com.example.plantera.data.fertilizer.FertilizerDao
 import com.example.plantera.data.pest.PestDao
@@ -41,10 +42,15 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideBedPlantDao(db: GardenDatabase): BedPlantDao = db.bedPlantDao()
+
+    @Provides
+    @Singleton
     fun provideGardenRepository(
         bedDao: BedDao,
         plantDao: PlantDao,
         pestDao: PestDao,
-        fertilizerDao: FertilizerDao
-    ): GardenRepository = GardenRepository(bedDao, plantDao, pestDao, fertilizerDao)
+        fertilizerDao: FertilizerDao,
+        bedPlantDao: BedPlantDao
+    ): GardenRepository = GardenRepository(bedDao, plantDao, pestDao, fertilizerDao,bedPlantDao)
 }

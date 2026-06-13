@@ -3,10 +3,13 @@ package com.example.plantera.screen.plantInfo
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.plantera.data.bed.Bed
 import com.example.plantera.data.plant.Plant
 import com.example.plantera.data.repository.GardenRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +18,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class PlantInfoViewModel @Inject constructor(
     private val repository: GardenRepository,
-    private val savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val plantId: Int = checkNotNull(savedStateHandle["plantId"])
@@ -33,5 +36,9 @@ class PlantInfoViewModel @Inject constructor(
                 _plant.value = plantFromDb
             }
         }
+    }
+
+    suspend fun loadBeds(): List<Bed>{
+        return repository.getAllBedsList()
     }
 }

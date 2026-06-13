@@ -6,6 +6,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.plantera.data.bed.Bed
 import com.example.plantera.data.bed.BedDao
+import com.example.plantera.data.bedPlant.BedPlant
+import com.example.plantera.data.bedPlant.BedPlantDao
 import com.example.plantera.data.fertilizer.Fertilizer
 import com.example.plantera.data.fertilizer.FertilizerDao
 import com.example.plantera.data.pest.Pest
@@ -14,8 +16,8 @@ import com.example.plantera.data.plant.Plant
 import com.example.plantera.data.plant.PlantDao
 
 @Database(
-    entities = [Bed::class, Plant::class, Pest::class, Fertilizer::class],
-    version = 1,
+    entities = [Bed::class, Plant::class, Pest::class, Fertilizer::class, BedPlant::class],
+    version = 2,
     exportSchema = false
 )
 abstract class GardenDatabase : RoomDatabase() {
@@ -23,6 +25,7 @@ abstract class GardenDatabase : RoomDatabase() {
     abstract fun plantDao(): PlantDao
     abstract fun pestDao(): PestDao
     abstract fun fertilizerDao(): FertilizerDao
+    abstract fun bedPlantDao(): BedPlantDao
 
     companion object {
         @Volatile
