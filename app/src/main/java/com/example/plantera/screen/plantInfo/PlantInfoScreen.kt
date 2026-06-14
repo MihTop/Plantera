@@ -1,17 +1,15 @@
 package com.example.plantera.screen.plantInfo
 
-import android.R.attr.onClick
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -29,11 +27,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.plantera.data.bed.Bed
+import com.example.plantera.data.bedPlant.BedPlant
+import com.example.plantera.data.plant.Plant
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,7 +42,6 @@ fun PlantInfoScreen(
     navController: NavController,
     viewModel: PlantInfoViewModel = hiltViewModel()
 ){
-
     val plant by viewModel.plant.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     var bedList by remember { mutableStateOf<List<Bed>>(emptyList()) }
@@ -77,7 +76,12 @@ fun PlantInfoScreen(
         if (showDialog == true){
             AddBedPlantDialog(
                 onDismiss = {showDialog = false},
-                bedList = bedList
+                onBedClick = { bedPlant ->
+                    viewModel.insertBedPlant(bedPlant)
+                    showDialog = false
+                },
+                bedList = bedList,
+                plant = plant
             )
         }
         Column(
@@ -95,13 +99,22 @@ fun PlantInfoScreen(
 @Composable
 fun AddBedPlantDialog(
     onDismiss: () -> Unit,
-    bedList: List<Bed>
+    onBedClick: (BedPlant) -> Unit,
+    bedList: List<Bed>,
+    plant: Plant?
 ){
     Dialog(onDismissRequest = onDismiss) {
-        LazyColumn() {
-            items(bedList){ bed ->
-                Box() {
-                    Text(bed.name)
+        Column() {
+            Text("Выберите грядку для посадки растения")
+            LazyColumn() {
+                items(bedList){ bed ->
+                    Row(modifier = Modifier.border(1.dp, Color.Black)
+                        .clickable{
+                            onBedClick(BedPlant(0,bed.id, plant!!.id))
+                        }
+                    ) {
+                        Text(bed.name)
+                    }
                 }
             }
         }
