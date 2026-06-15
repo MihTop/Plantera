@@ -65,7 +65,6 @@ fun GardenInfoScreen(
                     .fillMaxSize()
             ) {
                 Text(currentBed.name)
-                Text(currentBed.creationDate)
 
                 LazyColumn(
                     modifier = Modifier

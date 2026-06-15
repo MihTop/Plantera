@@ -56,12 +56,12 @@ class GardenRepository @Inject constructor(
 
     // Заполнение БД
     suspend fun populateBD(){
-        insertBed(Bed(0,"Один","17.12.2000",12,12))
-        insertBed(Bed(0,"Два","11.11.1111",3,2))
+        insertBed(Bed(0,"Один",12,12))
+        insertBed(Bed(0,"Два",3,2))
         insertPlant(Plant(0,"Капуста","Вкусная","https:ss"))
         insertPlant(Plant(0,"Мангуста","Быстрая","https:ss"))
-        insertPest(Pest(0,"Картофелеед","Кушает картошку","Купить мышь", "https:ass"))
-        insertPest(Pest(0,"Гниение","Убивает растение","Меньше поливать", "https:ass"))
+        insertPest(Pest(0,"Картофелеед","Кушает картошку","Купить мышь", "https:yss"))
+        insertPest(Pest(0,"Гниение","Убивает растение","Меньше поливать", "https:yss"))
         insertFertilizer(Fertilizer(0,"Сода"))
         insertFertilizer(Fertilizer(0,"Сера"))
     }

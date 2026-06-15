@@ -96,7 +96,6 @@ fun PlantInfoScreenContent(
                     showDialog = false
                 },
                 bedList = bedList,
-                plant = plant
             )
         }
         Column(
@@ -116,8 +115,7 @@ fun PlantInfoScreenContent(
 fun AddBedPlantDialog(
     onDismiss: () -> Unit,
     onBedClick: (Int) -> Unit,
-    bedList: List<Bed>,
-    plant: Plant?
+    bedList: List<Bed>
 ){
     Dialog(onDismissRequest = onDismiss) {
         Surface(modifier = Modifier.shadow(2.dp)) {

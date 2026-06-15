@@ -17,7 +17,7 @@ import com.example.plantera.data.plant.PlantDao
 
 @Database(
     entities = [Bed::class, Plant::class, Pest::class, Fertilizer::class, BedPlant::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class GardenDatabase : RoomDatabase() {
