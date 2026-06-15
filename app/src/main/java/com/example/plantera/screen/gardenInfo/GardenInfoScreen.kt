@@ -5,10 +5,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -24,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.plantera.screen.pestInfo.PestInfoViewModel
 
@@ -34,6 +39,7 @@ fun GardenInfoScreen(
     viewModel: GardenInfoViewModel = hiltViewModel()
 ){
     val bed by viewModel.bed.collectAsState()
+    val unplantedPlants by viewModel.unplantedPlants.collectAsStateWithLifecycle(initialValue = emptyList())
 
     Scaffold(
         topBar = {
@@ -52,7 +58,7 @@ fun GardenInfoScreen(
         }
     ) { paddingValues ->
         val currentBed = bed
-        if (currentBed != null)
+        if (currentBed != null) {
             Column(
                 modifier = Modifier
                     .padding(paddingValues)
@@ -61,14 +67,14 @@ fun GardenInfoScreen(
                 Text(currentBed.name)
                 Text(currentBed.creationDate)
 
-                Column(
+                LazyColumn(
                     modifier = Modifier
                         .weight(1f)
                         .padding(8.dp)
                 ) {
-                    for (y in 0 until currentBed.tilesY) {
-                        Row {
-                            for (x in 0 until currentBed.tilesX) {
+                    items(currentBed.tilesY) { y ->
+                        LazyRow {
+                            items(currentBed.tilesX) { x ->
                                 Box(
                                     modifier = Modifier
                                         .size(24.dp)
@@ -84,11 +90,20 @@ fun GardenInfoScreen(
                         }
                     }
                 }
-
+                LazyRow(Modifier.fillMaxWidth()) {
+                    items(unplantedPlants){ unPlant ->
+                        Box() {
+                            Text(unPlant.plantId.toString())
+                        }
+                    }
+                }
                 Text("Количество плиток по Y: ${currentBed.tilesY}")
-            } else
+            }
+        }
+        else{
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
+        }
     }
 }

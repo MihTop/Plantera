@@ -41,9 +41,9 @@ class PlantInfoViewModel @Inject constructor(
         return repository.getAllBedsList()
     }
 
-    fun insertBedPlant(bedPlant: BedPlant){
+    fun insertBedPlant(bedId: Int){
         viewModelScope.launch {
-            repository.insertBedPlant(bedPlant)
+            repository.insertBedPlant(BedPlant(0,bedId,plantId))
         }
     }
 }
