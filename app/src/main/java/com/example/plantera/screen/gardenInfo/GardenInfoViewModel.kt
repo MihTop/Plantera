@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -24,7 +25,9 @@ class GardenInfoViewModel @Inject constructor(
     private val _bed = MutableStateFlow<Bed?>(null)
     val bed: StateFlow<Bed?> = _bed.asStateFlow()
 
-    val unplantedPlants: Flow<List<BedPlant>> = repository.getUnplantedPlantWithId(bedId)
+    val unplantedPlants: Flow<Map<Int, List<BedPlant>>> = repository.getUnplantedPlantWithId(bedId).map { list ->
+        list.groupBy { it.plantId }
+    }
 
     init {
         loadBed()

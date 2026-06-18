@@ -1,6 +1,7 @@
 package com.example.plantera.screen.gardenInfo
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,7 +40,7 @@ fun GardenInfoScreen(
     viewModel: GardenInfoViewModel = hiltViewModel()
 ){
     val bed by viewModel.bed.collectAsState()
-    val unplantedPlants by viewModel.unplantedPlants.collectAsStateWithLifecycle(initialValue = emptyList())
+    val unplantedPlants by viewModel.unplantedPlants.collectAsStateWithLifecycle(initialValue = emptyMap())
 
     Scaffold(
         topBar = {
@@ -90,9 +91,10 @@ fun GardenInfoScreen(
                     }
                 }
                 LazyRow(Modifier.fillMaxWidth()) {
-                    items(unplantedPlants){ unPlant ->
-                        Box() {
-                            Text(unPlant.plantId.toString())
+                    items(unplantedPlants.toList()){ (unPlantId, unPlant) ->
+                        Box(Modifier.padding(2.dp)
+                            .border(2.dp,Color.Black)) {
+                            Text(unPlantId.toString() +" Ост: "+ unPlant.size)
                         }
                     }
                 }
