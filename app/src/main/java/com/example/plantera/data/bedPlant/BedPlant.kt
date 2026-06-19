@@ -1,5 +1,6 @@
 package com.example.plantera.data.bedPlant
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
@@ -31,4 +32,9 @@ data class BedPlant(
     val plantingDate: String = "",
     val posX: Int? = null,
     val posY: Int? = null
+)
+data class BedPlantWithInfo(
+    @Embedded val bedPlant: BedPlant,
+    val plantName: String,
+    val plantImageUrl: String?
 )

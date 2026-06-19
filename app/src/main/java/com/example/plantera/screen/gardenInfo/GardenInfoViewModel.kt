@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.plantera.data.bed.Bed
 import com.example.plantera.data.bedPlant.BedPlant
+import com.example.plantera.data.bedPlant.BedPlantWithInfo
 import com.example.plantera.data.repository.GardenRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -25,8 +26,8 @@ class GardenInfoViewModel @Inject constructor(
     private val _bed = MutableStateFlow<Bed?>(null)
     val bed: StateFlow<Bed?> = _bed.asStateFlow()
 
-    val unplantedPlants: Flow<Map<Int, List<BedPlant>>> = repository.getUnplantedPlantWithId(bedId).map { list ->
-        list.groupBy { it.plantId }
+    val unplantedPlants: Flow<Map<Int, List<BedPlantWithInfo>>> = repository.getUnplantedPlantWithId(bedId).map { list ->
+        list.groupBy { it.bedPlant.plantId }
     }
 
     init {
@@ -40,4 +41,12 @@ class GardenInfoViewModel @Inject constructor(
             }
         }
     }
+
+    // В GardenInfoViewModel.kt
+    fun updatePlantPosition(bedPlantId: Int, posX: Int, posY: Int) {
+        viewModelScope.launch {
+            repository.updateBedPlantPosition(bedPlantId, posX, posY)
+        }
+    }
+
 }

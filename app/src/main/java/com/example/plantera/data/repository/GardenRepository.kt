@@ -4,6 +4,7 @@ import com.example.plantera.data.bed.Bed
 import com.example.plantera.data.bed.BedDao
 import com.example.plantera.data.bedPlant.BedPlant
 import com.example.plantera.data.bedPlant.BedPlantDao
+import com.example.plantera.data.bedPlant.BedPlantWithInfo
 import com.example.plantera.data.fertilizer.Fertilizer
 import com.example.plantera.data.fertilizer.FertilizerDao
 import com.example.plantera.data.pest.Pest
@@ -52,7 +53,8 @@ class GardenRepository @Inject constructor(
 
     // Методы растений на грядках
     suspend fun insertBedPlant(bedPlant: BedPlant) = bedPlantDao.insert(bedPlant)
-    fun getUnplantedPlantWithId(bedId: Int): Flow<List<BedPlant>> = bedPlantDao.getUnplantedPlantWithId(bedId)
+    suspend fun updateBedPlantPosition(bedId: Int, posX: Int, posY: Int) = bedPlantDao.updatePosition(bedId,posX,posY)
+    fun getUnplantedPlantWithId(bedId: Int): Flow<List<BedPlantWithInfo>> = bedPlantDao.getUnplantedPlantsWithId(bedId)
 
     // Заполнение БД
     suspend fun populateBD(){
