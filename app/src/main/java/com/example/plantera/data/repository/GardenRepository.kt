@@ -55,6 +55,7 @@ class GardenRepository @Inject constructor(
     suspend fun insertBedPlant(bedPlant: BedPlant) = bedPlantDao.insert(bedPlant)
     suspend fun updateBedPlantPosition(bedId: Int, posX: Int, posY: Int) = bedPlantDao.updatePosition(bedId,posX,posY)
     fun getUnplantedPlantWithId(bedId: Int): Flow<List<BedPlantWithInfo>> = bedPlantDao.getUnplantedPlantsWithId(bedId)
+    fun getPlantedPlantWithId(bedId: Int): Flow<List<BedPlantWithInfo>> = bedPlantDao.getPlantedPlantsWithId(bedId)
 
     // Заполнение БД
     suspend fun populateBD(){

@@ -30,6 +30,8 @@ class GardenInfoViewModel @Inject constructor(
         list.groupBy { it.bedPlant.plantId }
     }
 
+    val plantedPlants:  Flow<List<BedPlantWithInfo>> = repository.getPlantedPlantWithId(bedId)
+
     init {
         loadBed()
     }

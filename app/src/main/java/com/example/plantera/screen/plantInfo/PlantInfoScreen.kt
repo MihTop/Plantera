@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -47,7 +49,8 @@ fun PlantInfoScreen(
     PlantInfoScreenContent(
         plant = plant,
         onLoadBeds = { viewModel.loadBeds() },
-        onInsertBedPlant = { viewModel.insertBedPlant(it) }
+        onInsertBedPlant = { viewModel.insertBedPlant(it) },
+        navController = navController
     )
 }
 
@@ -56,7 +59,8 @@ fun PlantInfoScreen(
 fun PlantInfoScreenContent(
     plant: Plant?,
     onLoadBeds: suspend () -> List<Bed>,
-    onInsertBedPlant: (Int) -> Unit
+    onInsertBedPlant: (Int) -> Unit,
+    navController: NavController
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var bedList by remember { mutableStateOf<List<Bed>>(emptyList()) }
@@ -80,6 +84,14 @@ fun PlantInfoScreenContent(
                         "Конкретное растение",
                         fontWeight = FontWeight.Bold
                     )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Возврат"
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color(0xFF5E7A3C),
@@ -135,14 +147,4 @@ fun AddBedPlantDialog(
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PlantInfoScreenPreview() {
-    PlantInfoScreenContent(
-        plant = Plant(1, "Томат", "Вкусный и сочный овощ для вашей грядки", null),
-        onLoadBeds = { emptyList() },
-        onInsertBedPlant = {}
-    )
 }

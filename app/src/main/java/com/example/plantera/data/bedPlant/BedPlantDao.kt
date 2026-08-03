@@ -28,6 +28,13 @@ interface BedPlantDao {
     WHERE bed_plants.bedId = :bedId AND bed_plants.posX IS NULL""")
     fun getUnplantedPlantsWithId(bedId: Int): Flow<List<BedPlantWithInfo>>
 
+    @Query("""
+    SELECT bed_plants.*, plants.name as plantName, plants.imageUrl as plantImageUrl 
+    FROM bed_plants 
+    INNER JOIN plants ON bed_plants.plantId = plants.id 
+    WHERE bed_plants.bedId = :bedId AND bed_plants.posX IS NOT NULL""")
+    fun getPlantedPlantsWithId(bedId: Int): Flow<List<BedPlantWithInfo>>
+
     @Query("UPDATE bed_plants SET posX = :posX, posY = :posY WHERE id = :id")
     suspend fun updatePosition(id: Int, posX: Int, posY: Int)
 }
