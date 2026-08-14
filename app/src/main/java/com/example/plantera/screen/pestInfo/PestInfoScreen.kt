@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.plantera.screen.plantInfo.PlantInfoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,7 +27,6 @@ fun PestInfoScreen(
     navController: NavController,
     viewModel: PestInfoViewModel = hiltViewModel()
 ){
-
     val pest by viewModel.pest.collectAsState()
 
     Scaffold(

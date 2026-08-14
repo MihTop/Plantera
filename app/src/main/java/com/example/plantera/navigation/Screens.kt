@@ -7,4 +7,6 @@ sealed class Screens(val route: String) {
     object PlantInfo: Screens("plant_info_screen/{plantId}")
     object PestInfo: Screens("pest_info_screen/{pestId}")
     object BedInfo: Screens("bed_info_screen/{bedId}")
+    object Timetable: Screens("timetable_screen")
+    object Fertilizer: Screens("fertilizer_screen")
 }

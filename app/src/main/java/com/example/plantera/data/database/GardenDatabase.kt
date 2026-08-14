@@ -14,10 +14,12 @@ import com.example.plantera.data.pest.Pest
 import com.example.plantera.data.pest.PestDao
 import com.example.plantera.data.plant.Plant
 import com.example.plantera.data.plant.PlantDao
+import com.example.plantera.data.timetable.Timetable
+import com.example.plantera.data.timetable.TimetableDao
 
 @Database(
-    entities = [Bed::class, Plant::class, Pest::class, Fertilizer::class, BedPlant::class],
-    version = 3,
+    entities = [Bed::class, Plant::class, Pest::class, Fertilizer::class, BedPlant::class, Timetable::class],
+    version = 4,
     exportSchema = false
 )
 abstract class GardenDatabase : RoomDatabase() {
@@ -26,6 +28,7 @@ abstract class GardenDatabase : RoomDatabase() {
     abstract fun pestDao(): PestDao
     abstract fun fertilizerDao(): FertilizerDao
     abstract fun bedPlantDao(): BedPlantDao
+    abstract fun timetableDao(): TimetableDao
 
     companion object {
         @Volatile

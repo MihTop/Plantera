@@ -11,6 +11,8 @@ import com.example.plantera.data.pest.Pest
 import com.example.plantera.data.pest.PestDao
 import com.example.plantera.data.plant.Plant
 import com.example.plantera.data.plant.PlantDao
+import com.example.plantera.data.timetable.Timetable
+import com.example.plantera.data.timetable.TimetableDao
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +23,8 @@ class GardenRepository @Inject constructor(
     private val plantDao: PlantDao,
     private val pestDao: PestDao,
     private val fertilizerDao: FertilizerDao,
-    private val bedPlantDao: BedPlantDao
+    private val bedPlantDao: BedPlantDao,
+    private val timetableDao: TimetableDao
 ) {
     // Методы грядок
     suspend fun insertBed(bed: Bed) = bedDao.insert(bed)
@@ -56,6 +59,10 @@ class GardenRepository @Inject constructor(
     suspend fun updateBedPlantPosition(bedId: Int, posX: Int, posY: Int) = bedPlantDao.updatePosition(bedId,posX,posY)
     fun getUnplantedPlantWithId(bedId: Int): Flow<List<BedPlantWithInfo>> = bedPlantDao.getUnplantedPlantsWithId(bedId)
     fun getPlantedPlantWithId(bedId: Int): Flow<List<BedPlantWithInfo>> = bedPlantDao.getPlantedPlantsWithId(bedId)
+
+    // Методы расписания на грядках
+    suspend fun insertTimetable(timetable: Timetable) = timetableDao.insert(timetable)
+    fun getAllTimetables(): Flow<List<Timetable>> = timetableDao.getAllTimetables()
 
     // Заполнение БД
     suspend fun populateBD(){

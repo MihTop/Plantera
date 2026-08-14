@@ -6,11 +6,11 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.BugReport
-import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Forest
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -20,9 +20,6 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -99,4 +96,6 @@ enum class AppDestinations(
     GARDEN_LIST("Главная", Icons.Default.Home, "gardenList_screen"),
     PEST("Вредители", Icons.Default.BugReport, "pest_screen"),
     PLANT("Растения", Icons.Default.Forest, "plant_screen"),
+    FERTILIZER("Удобрения", Icons.Default.Inventory2, "fertilizer_screen"),
+    TIMETABLE("Расписание", Icons.Default.CalendarMonth, "timetable_screen")
 }

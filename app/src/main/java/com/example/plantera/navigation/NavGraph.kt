@@ -7,12 +7,14 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.plantera.screen.fertilizer.FertilizerScreen
 import com.example.plantera.screen.gardenInfo.GardenInfoScreen
 import com.example.plantera.screen.gardenList.GardenListScreen
 import com.example.plantera.screen.pestBook.PestBookScreen
 import com.example.plantera.screen.pestInfo.PestInfoScreen
 import com.example.plantera.screen.plantBook.PlantBookScreen
 import com.example.plantera.screen.plantInfo.PlantInfoScreen
+import com.example.plantera.screen.timetable.TimetableScreen
 
 @Composable
 fun NavGraph(
@@ -56,6 +58,12 @@ fun NavGraph(
             GardenInfoScreen(
                 navController = navController
             )
+        }
+        composable(route = Screens.Timetable.route) {
+            TimetableScreen(navController)
+        }
+        composable(route = Screens.Fertilizer.route) {
+            FertilizerScreen(navController)
         }
     }
 }

@@ -1,7 +1,5 @@
 package com.example.plantera.screen.gardenList
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,8 +37,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.plantera.data.bed.Bed
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -130,7 +126,7 @@ fun AddBedDialog(
                 OutlinedTextField(value = bedYSize.value,
                     onValueChange = {bedYSize.value = it},
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
-                Button(onClick = { onAdd(bedName.value,bedXSize.value.toInt(),bedYSize.value.toInt());
+                Button(onClick = { onAdd(bedName.value,bedXSize.value.toInt(),bedYSize.value.toInt())
                 onDismiss()}) {
                     Text("Добавить")
                 }

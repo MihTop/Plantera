@@ -8,6 +8,7 @@ import com.example.plantera.data.fertilizer.FertilizerDao
 import com.example.plantera.data.pest.PestDao
 import com.example.plantera.data.plant.PlantDao
 import com.example.plantera.data.repository.GardenRepository
+import com.example.plantera.data.timetable.TimetableDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -46,11 +47,16 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideTimetableDao(db: GardenDatabase): TimetableDao = db.timetableDao()
+
+    @Provides
+    @Singleton
     fun provideGardenRepository(
         bedDao: BedDao,
         plantDao: PlantDao,
         pestDao: PestDao,
         fertilizerDao: FertilizerDao,
-        bedPlantDao: BedPlantDao
-    ): GardenRepository = GardenRepository(bedDao, plantDao, pestDao, fertilizerDao,bedPlantDao)
+        bedPlantDao: BedPlantDao,
+        timetableDao: TimetableDao
+    ): GardenRepository = GardenRepository(bedDao, plantDao, pestDao, fertilizerDao,bedPlantDao,timetableDao)
 }

@@ -27,7 +27,7 @@ import androidx.navigation.NavController
 @Composable
 fun PestBookScreen(
     navController: NavController,
-    viewModel: PestBookScreenViewModel = hiltViewModel()
+    viewModel: PestBookViewModel = hiltViewModel()
 ){
     val pests by viewModel.pests.collectAsStateWithLifecycle(initialValue = emptyList())
 
@@ -36,7 +36,7 @@ fun PestBookScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Вредители и болезни",
+                        "Удобрения",
                         fontWeight = FontWeight.Bold
                     )
                 },

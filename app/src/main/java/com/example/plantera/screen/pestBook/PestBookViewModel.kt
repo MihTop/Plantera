@@ -8,7 +8,7 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 
 @HiltViewModel
-class PestBookScreenViewModel @Inject constructor(
+class PestBookViewModel @Inject constructor(
     private val repository: GardenRepository
 ) : ViewModel() {
     val pests: Flow<List<Pest>> = repository.getAllPests()
