@@ -62,6 +62,7 @@ class GardenRepository @Inject constructor(
 
     // Методы расписания на грядках
     suspend fun insertTimetable(timetable: Timetable) = timetableDao.insert(timetable)
+    suspend fun updateDone(done: Boolean, id:Int) = timetableDao.updateDone(done,id)
     fun getAllTimetables(): Flow<List<Timetable>> = timetableDao.getAllTimetables()
 
     // Заполнение БД

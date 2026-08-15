@@ -12,5 +12,6 @@ data class Timetable(
     val typeOfWork: String,
     val date: String,
     val time: String,
-    val equipment: String?
+    val equipment: String?,
+    val isDone: Boolean
 )

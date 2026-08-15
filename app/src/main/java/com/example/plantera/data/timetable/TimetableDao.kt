@@ -18,6 +18,9 @@ interface TimetableDao {
     @Delete
     suspend fun delete(timetable: Timetable)
 
+    @Query("UPDATE timetable SET isDone = :done WHERE id = :id")
+    suspend fun updateDone(done: Boolean, id:Int)
+
     @Query("SELECT * FROM timetable ORDER BY id DESC")
     fun getAllTimetables(): Flow<List<Timetable>>
 }

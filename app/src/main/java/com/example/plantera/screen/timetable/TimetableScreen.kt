@@ -12,10 +12,21 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Attachment
+import androidx.compose.material.icons.filled.Backpack
+import androidx.compose.material.icons.filled.BugReport
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -107,12 +118,20 @@ fun TimetableScreen(
                         ),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
-                        Text(timetable.name)
-                        Text(timetable.description)
-                        Text(timetable.typeOfWork)
-                        Text(timetable.date)
-                        Text(timetable.time)
-                        Text(timetable.equipment?: "")
+                        Row(modifier = Modifier.fillMaxSize(),
+                            verticalAlignment = Alignment.CenterVertically) {
+                            Column(modifier = Modifier.fillMaxWidth(0.9f)) {
+                                Text(timetable.name)
+                                Text(timetable.description)
+                                Text(timetable.typeOfWork)
+                                Text(timetable.date)
+                                Text(timetable.time)
+                                Text(timetable.equipment?: "")
+                            }
+                            IconButton(onClick = {viewModel.updateDone(!timetable.isDone,timetable.id)}) {
+                                Icon(imageVector = if (timetable.isDone){Icons.Default.Done} else{Icons.Default.Close}, contentDescription = "Отметка работы")
+                            }
+                        }
                     }
                 }
             }
@@ -125,6 +144,8 @@ fun AddTimetableDialog(
     onDismiss: () -> Unit,
     onAdd: (String, String, String, String, String, String?) -> Unit,
 ) {
+    var expanded by remember { mutableStateOf(false) }
+
     Dialog(onDismissRequest = onDismiss) {
         val name = remember { mutableStateOf("") }
         val description = remember { mutableStateOf("") }
@@ -162,11 +183,75 @@ fun AddTimetableDialog(
                     label = { Text("Описание") }
                 )
 
-                OutlinedTextField(
-                    value = typeOfWork.value,
-                    onValueChange = { typeOfWork.value = it },
-                    label = { Text("Тип работы") }
-                )
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }
+                ) {
+                    OutlinedTextField(
+                        value = typeOfWork.value,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Вид работы") },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                        },
+                        modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            leadingIcon = { Icon(Icons.Default.BugReport, contentDescription = "Борьба с вредителями") },
+                            onClick = {
+                                typeOfWork.value = "Борьба с вредителями"
+                                expanded = false
+                            },
+                            text = { Text("Борьба с вредителями") }
+                        )
+                        DropdownMenuItem(
+                            leadingIcon = { Icon(Icons.Default.WaterDrop, contentDescription = "Поливка растений") },
+                            onClick = {
+                                typeOfWork.value = "Поливка растений"
+                                expanded = false
+                            },
+                            text = { Text("Поливка растений") }
+                        )
+                        DropdownMenuItem(
+                            leadingIcon = { Icon(Icons.Default.Add, contentDescription = "Посадка растений") },
+                            onClick = {
+                                typeOfWork.value = "Посадка растений"
+                                expanded = false
+                            },
+                            text = { Text("Посадка растений") }
+                        )
+                        DropdownMenuItem(
+                            leadingIcon = { Icon(Icons.Default.Backpack, contentDescription = "Внести удобрения") },
+                            onClick = {
+                                typeOfWork.value = "Внести удобрения"
+                                expanded = false
+                            },
+                            text = { Text("Внести удобрения") }
+                        )
+                        DropdownMenuItem(
+                            leadingIcon = { Icon(Icons.Default.Remove, contentDescription = "Уборка урожая") },
+                            onClick = {
+                                typeOfWork.value = "Уборка урожая"
+                                expanded = false
+                            },
+                            text = { Text("Уборка урожая") }
+                        )
+                        DropdownMenuItem(
+                            leadingIcon = { Icon(Icons.Default.Attachment, contentDescription = "Прочее") },
+                            onClick = {
+                                typeOfWork.value = "Прочее"
+                                expanded = false
+                            },
+                            text = { Text("Прочее") }
+                        )
+                    }
+                }
 
                 Text("Дата", style = MaterialTheme.typography.labelMedium)
                 Row(

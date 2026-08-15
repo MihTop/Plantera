@@ -17,7 +17,12 @@ class TimetableViewModel @Inject constructor(
 
     fun addTimetable(name: String, description: String, typeOfWork: String, date: String, time: String, equipment: String?){
         viewModelScope.launch {
-            repository.insertTimetable(Timetable(id = 0, name = name, description = description, typeOfWork = typeOfWork, date = date, time = time,equipment = equipment))
+            repository.insertTimetable(Timetable(id = 0, name = name, description = description, typeOfWork = typeOfWork, date = date, time = time, equipment = equipment, isDone = false))
+        }
+    }
+    fun updateDone(done: Boolean, id:Int){
+        viewModelScope.launch {
+            repository.updateDone(done,id)
         }
     }
 }
