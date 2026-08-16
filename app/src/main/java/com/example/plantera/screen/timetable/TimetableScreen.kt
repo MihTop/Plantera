@@ -1,5 +1,12 @@
 package com.example.plantera.screen.timetable
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,6 +45,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,22 +55,45 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import kotlin.math.min
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimetableScreen(
     navController: NavController,
     viewModel: TimetableViewModel = hiltViewModel()
-){
+) {
+    val context = LocalContext.current
     val timetables by viewModel.timetables.collectAsStateWithLifecycle(initialValue = emptyList())
     var showAddDialog by remember { mutableStateOf(false) }
+    val permissionRequired by viewModel.permissionRequired.collectAsState()
+
+    val notificationLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { }
+
+    val alarmLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { }
+
+    LaunchedEffect(permissionRequired) {
+        if (permissionRequired) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                alarmLauncher.launch(intent)
+                viewModel.clearPermissionRequired()
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -88,6 +120,15 @@ fun TimetableScreen(
         },
         floatingActionButton = { ExtendedFloatingActionButton(
             onClick = {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    if (ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.POST_NOTIFICATIONS
+                        ) != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    }
+                }
                 showAddDialog = true
             },
             icon = { Icon(Icons.Default.Add,"Добавление задания") },
@@ -96,9 +137,7 @@ fun TimetableScreen(
     ) { paddingValues ->
         if (showAddDialog){
             AddTimetableDialog(onDismiss = {showAddDialog = false},
-                onAdd = {name, description, typeOfWork, date, time, equipment ->
-                    viewModel.addTimetable(name, description, typeOfWork, date, time, equipment)
-                }
+                viewModel = viewModel
             )
         }
         Column(
@@ -142,7 +181,7 @@ fun TimetableScreen(
 @Composable
 fun AddTimetableDialog(
     onDismiss: () -> Unit,
-    onAdd: (String, String, String, String, String, String?) -> Unit,
+    viewModel: TimetableViewModel
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -338,14 +377,22 @@ fun AddTimetableDialog(
                             "${hour.value}:${minute.value}"
                         } else ""
 
-                        onAdd(
+                        viewModel.scheduleNotification(
                             name.value,
+                            description.value.substring(0, min(description.value.length,500)),
+                            day.value.toInt(),
+                            month.value.toInt(),
+                            year.value.toInt(),
+                            hour.value.toInt(),
+                            minute.value.toInt()
+                        )
+
+                        viewModel.addTimetable(name.value,
                             description.value,
                             typeOfWork.value,
                             dateString,
                             timeString,
-                            equipment.value
-                        )
+                            equipment.value)
                         onDismiss()
                     },
                     modifier = Modifier.fillMaxWidth()
