@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.plantera.data.bed.Bed
-import com.example.plantera.data.bedPlant.BedPlant
 import com.example.plantera.data.bedPlant.BedPlantWithInfo
 import com.example.plantera.data.repository.GardenRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,10 +43,21 @@ class GardenInfoViewModel @Inject constructor(
         }
     }
 
-    // В GardenInfoViewModel.kt
     fun updatePlantPosition(bedPlantId: Int, posX: Int, posY: Int) {
         viewModelScope.launch {
             repository.updateBedPlantPosition(bedPlantId, posX, posY)
+        }
+    }
+
+    fun removePlantPosition(bedPlantId: Int){
+        viewModelScope.launch {
+            repository.removeBedPlantPosition(bedPlantId)
+        }
+    }
+
+    fun deletePlantPosition(bedPlantId: Int){
+        viewModelScope.launch {
+            repository.deleteBedPlant(bedPlantId)
         }
     }
 

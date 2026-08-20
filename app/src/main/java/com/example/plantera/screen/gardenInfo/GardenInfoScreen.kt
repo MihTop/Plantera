@@ -18,8 +18,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Redo
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,6 +36,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -111,7 +116,7 @@ fun GardenInfoScreen(
                                 repeat(currentBed.tilesX) { x ->
                                     val plant = plantedMap[x to y]
                                     val isSelected = selectedTiles.contains(Pair(x, y))
-
+                                    var expanded by remember { mutableStateOf(false) }
                                     Box(
                                         modifier = Modifier
                                             .size(48.dp)
@@ -124,10 +129,13 @@ fun GardenInfoScreen(
                                                 }
                                             )
                                             .clickable {
+                                                println(selectedUnPlant)
                                                 if (selectedUnPlant != -1 && curUnPlantCount > selectedTiles.size) {
                                                     if (plant == null && !isSelected) {
                                                         selectedTiles.add(Pair(x, y))
                                                     }
+                                                } else if (selectedUnPlant == -1){
+                                                    expanded = true
                                                 }
                                             }
                                     ) {
@@ -148,9 +156,75 @@ fun GardenInfoScreen(
                                             )
                                         }
                                     }
+                                    DropdownMenu(
+                                        expanded = expanded,
+                                        onDismissRequest = { expanded = false }
+                                    ) {
+                                        DropdownMenuItem(
+                                            leadingIcon = {
+                                                Icon(
+                                                    Icons.Default.Delete,
+                                                    contentDescription = "Удалить"
+                                                )
+                                            },
+                                            onClick = {
+                                                viewModel.deletePlantPosition(plant?.bedPlant?.id!!)
+                                                expanded = false
+                                            },
+                                            text = { Text(text = "Удалить", color = Color.Red) }
+                                        )
+                                        DropdownMenuItem(
+                                            leadingIcon = {
+                                                Icon(
+                                                    Icons.AutoMirrored.Filled.Redo,
+                                                    contentDescription = "В непосаженные"
+                                                )
+                                            },
+                                            onClick = {
+                                                viewModel.removePlantPosition(plant?.bedPlant?.id!!)
+                                                expanded = false
+                                            },
+                                            text = { Text(text = "В непосаженные", color = Color.Red) }
+                                        )
+                                    }
                                 }
                             }
                         }
+                    }
+                }
+                LazyRow() {
+                    items(unplantedPlants.toList()) { (unPlantId, unPlant) ->
+                        Box(
+                            Modifier
+                                .padding(2.dp)
+                                .border(2.dp, Color.Black)
+                                .clickable {
+                                    selectedUnPlant = unPlantId
+                                    curUnPlantCount = unPlant.size
+                                }
+                        ) {
+                            Text(unPlant[0].plantName + " Ост: " + unPlant.size)
+                        }
+                    }
+                }
+                if (selectedUnPlant != -1) {
+                    Button(onClick = {
+                        val plantsToPlant = unplantedPlants[selectedUnPlant] ?: emptyList()
+
+                        selectedTiles.forEachIndexed { index, coords ->
+                            if (index < plantsToPlant.size) {
+                                val plantRecord = plantsToPlant[index]
+                                viewModel.updatePlantPosition(
+                                    plantRecord.bedPlant.id,
+                                    coords.first,
+                                    coords.second
+                                )
+                            }
+                        }
+                        selectedTiles.clear()
+                        selectedUnPlant = -1
+                    }) {
+                        Text("Посадить растения")
                     }
                 }
             }

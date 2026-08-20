@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.example.plantera.data.plant.Plant
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -37,4 +36,7 @@ interface BedPlantDao {
 
     @Query("UPDATE bed_plants SET posX = :posX, posY = :posY WHERE id = :id")
     suspend fun updatePosition(id: Int, posX: Int, posY: Int)
+
+    @Query("UPDATE bed_plants SET posX = null, posY = null WHERE id = :bedPlantId")
+    suspend fun removePosition(bedPlantId: Int)
 }

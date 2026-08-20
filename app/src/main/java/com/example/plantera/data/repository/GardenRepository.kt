@@ -16,6 +16,7 @@ import com.example.plantera.data.timetable.TimetableDao
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kotlinx.coroutines.flow.Flow
+import kotlin.Int
 
 @Singleton
 class GardenRepository @Inject constructor(
@@ -57,6 +58,8 @@ class GardenRepository @Inject constructor(
     // Методы растений на грядках
     suspend fun insertBedPlant(bedPlant: BedPlant) = bedPlantDao.insert(bedPlant)
     suspend fun updateBedPlantPosition(bedId: Int, posX: Int, posY: Int) = bedPlantDao.updatePosition(bedId,posX,posY)
+    suspend fun removeBedPlantPosition(bedPlantId: Int) = bedPlantDao.removePosition(bedPlantId)
+    suspend fun deleteBedPlant(bedPlantId: Int) = bedPlantDao.deleteById(bedPlantId)
     fun getUnplantedPlantWithId(bedId: Int): Flow<List<BedPlantWithInfo>> = bedPlantDao.getUnplantedPlantsWithId(bedId)
     fun getPlantedPlantWithId(bedId: Int): Flow<List<BedPlantWithInfo>> = bedPlantDao.getPlantedPlantsWithId(bedId)
 
