@@ -60,6 +60,7 @@ class GardenRepository @Inject constructor(
     suspend fun updateBedPlantPosition(bedId: Int, posX: Int, posY: Int) = bedPlantDao.updatePosition(bedId,posX,posY)
     suspend fun removeBedPlantPosition(bedPlantId: Int) = bedPlantDao.removePosition(bedPlantId)
     suspend fun deleteBedPlant(bedPlantId: Int) = bedPlantDao.deleteById(bedPlantId)
+    suspend fun removeResizedBedPlantPosition(bedId: Int, posX: Int, posY: Int) = bedPlantDao.removeResizedPosition(bedId,posX,posY)
     fun getUnplantedPlantWithId(bedId: Int): Flow<List<BedPlantWithInfo>> = bedPlantDao.getUnplantedPlantsWithId(bedId)
     fun getPlantedPlantWithId(bedId: Int): Flow<List<BedPlantWithInfo>> = bedPlantDao.getPlantedPlantsWithId(bedId)
 

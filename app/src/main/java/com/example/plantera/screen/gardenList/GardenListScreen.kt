@@ -1,7 +1,9 @@
 package com.example.plantera.screen.gardenList
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,12 +12,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -37,6 +41,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.plantera.data.bed.Bed
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -84,6 +89,13 @@ fun GardenListScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(beds, key = {it.id}){ bed ->
+                    var showEditDialog by remember { mutableStateOf(false) }
+                    if (showEditDialog){
+                        EditBedDialog(onDismiss = {showEditDialog = false},
+                            bed = bed,
+                            viewModel = viewModel
+                        )
+                    }
                     Card(modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp, vertical = 8.dp),
@@ -93,10 +105,18 @@ fun GardenListScreen(
                         onClick = { navController.navigate("bed_info_screen/${bed.id}") },
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
-                        Text(bed.name)
-                        Row {
-                            Text("Размер по X:${bed.tilesX}")
-                            Text("Размер по Y:${bed.tilesY}")
+                        Row(modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween) {
+                            Column(modifier = Modifier.fillMaxHeight()) {
+                                Text(bed.name)
+                                Row {
+                                    Text("Размер по X:${bed.tilesX}")
+                                    Text("Размер по Y:${bed.tilesY}")
+                                }
+                            }
+                            IconButton(onClick = {showEditDialog = true}, ) {
+                                Icon(Icons.Default.Edit, contentDescription = "Изменить грядку")
+                            }
                         }
                     }
                 }
@@ -129,6 +149,37 @@ fun AddBedDialog(
                 Button(onClick = { onAdd(bedName.value,bedXSize.value.toInt(),bedYSize.value.toInt())
                 onDismiss()}) {
                     Text("Добавить")
+                }
+            }
+        }
+    }
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditBedDialog(
+    bed: Bed,
+    onDismiss: () -> Unit,
+    viewModel: GardenListViewModel
+){
+    Dialog(onDismissRequest = onDismiss) {
+        val bedName = remember{mutableStateOf(bed.name)}
+        val bedXSize = remember{mutableStateOf(bed.tilesX.toString())}
+        val bedYSize = remember{mutableStateOf(bed.tilesY.toString())}
+        Surface(modifier = Modifier.shadow(2.dp)) {
+            Column() {
+                Text("Измените параметры грядки")
+                OutlinedTextField(value = bedName.value,
+                    onValueChange = {bedName.value = it},
+                )
+                OutlinedTextField(value = bedXSize.value,
+                    onValueChange = {bedXSize.value = it},
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
+                OutlinedTextField(value = bedYSize.value,
+                    onValueChange = {bedYSize.value = it},
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
+                Button(onClick = { viewModel.editBed(Bed(id = bed.id, name = bedName.value, tilesX = bedXSize.value.toInt(), tilesY = bedYSize.value.toInt()))
+                    onDismiss()}) {
+                    Text("Изменить")
                 }
             }
         }

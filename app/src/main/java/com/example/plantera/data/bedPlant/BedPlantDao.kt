@@ -39,4 +39,7 @@ interface BedPlantDao {
 
     @Query("UPDATE bed_plants SET posX = null, posY = null WHERE id = :bedPlantId")
     suspend fun removePosition(bedPlantId: Int)
+
+    @Query("UPDATE bed_plants SET posX = null, posY = null WHERE bedId = :bedId AND (posX >= :posX OR posY >= :posY)")
+    suspend fun removeResizedPosition(bedId: Int, posX: Int, posY: Int)
 }

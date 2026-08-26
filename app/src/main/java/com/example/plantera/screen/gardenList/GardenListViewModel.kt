@@ -20,4 +20,11 @@ class GardenListViewModel @Inject constructor(
             repository.insertBed(Bed(id = 0, name = name, tilesX = xSize, tilesY = ySize))
         }
     }
+
+    fun editBed(bed: Bed){
+        viewModelScope.launch {
+            repository.removeResizedBedPlantPosition(bed.id,bed.tilesX,bed.tilesY)
+            repository.updateBed(bed)
+        }
+    }
 }
