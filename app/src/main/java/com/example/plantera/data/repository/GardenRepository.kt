@@ -75,8 +75,8 @@ class GardenRepository @Inject constructor(
         insertBed(Bed(0,"Два",3,2))
         insertPlant(Plant(0,"Капуста","Вкусная","https:ss"))
         insertPlant(Plant(0,"Мангуста","Быстрая","https:ss"))
-        insertPest(Pest(0,"Картофелеед","Кушает картошку","Купить мышь", "https:yss"))
-        insertPest(Pest(0,"Гниение","Убивает растение","Меньше поливать", "https:yss"))
+        insertPest(Pest(0,"Картофелеед","Кушает картошку","Картофель Перец","Купить мышь", "https:yss"))
+        insertPest(Pest(0,"Гниение","Убивает растение","Картофель Перец Огурец Клубника","Меньше поливать", "https:yss"))
         insertFertilizer(Fertilizer(0,"Сода"))
         insertFertilizer(Fertilizer(0,"Сера"))
     }

@@ -19,7 +19,7 @@ import com.example.plantera.data.timetable.TimetableDao
 
 @Database(
     entities = [Bed::class, Plant::class, Pest::class, Fertilizer::class, BedPlant::class, Timetable::class],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 abstract class GardenDatabase : RoomDatabase() {

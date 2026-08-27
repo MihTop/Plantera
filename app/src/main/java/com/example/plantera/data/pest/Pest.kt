@@ -9,6 +9,7 @@ data class Pest(
     val id: Int = 0,
     val name: String,
     val description: String,
+    val affectedPlants: String,
     val prevention: String,
     val image: String
 )
