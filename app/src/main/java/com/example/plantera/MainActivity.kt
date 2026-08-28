@@ -1,17 +1,14 @@
 package com.example.plantera
 
-import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BugReport
+import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Forest
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -95,8 +92,6 @@ enum class AppDestinations(
     val nav: String
 ) {
     GARDEN_LIST("Главная", Icons.Default.Home, "gardenList_screen"),
-    PEST("Вредители", Icons.Default.BugReport, "pest_screen"),
-    PLANT("Растения", Icons.Default.Forest, "plant_screen"),
-    FERTILIZER("Удобрения", Icons.Default.Inventory2, "fertilizer_screen"),
+    BOOK_PICKER("Справочники", Icons.Default.Book, "book_picker_screen"),
     TIMETABLE("Расписание", Icons.Default.CalendarMonth, "timetable_screen")
 }

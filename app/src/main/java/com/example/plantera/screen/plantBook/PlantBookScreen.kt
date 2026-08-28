@@ -11,10 +11,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -34,53 +31,44 @@ fun PlantBookScreen(
 ){
     val plants by viewModel.plants.collectAsStateWithLifecycle(initialValue = emptyList())
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Справочник растений",
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF5E7A3C),
-                    titleContentColor = Color.White
-                )
-            )
-        },
-        floatingActionButton = {
-            Button(
-                onClick = { viewModel.populateBD() },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF5E7A3C)
-                )
-            ) {
-                Text("Заполнить БД", fontSize = 24.sp, color = Color.White)
-            }
-        },
-    ) { paddingValues ->
-        Column(
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Button(
+            onClick = { viewModel.populateBD() },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF5E7A3C)
+            ),
             modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(plants, key = {it.id}){ plant ->
-                    Card(modifier = Modifier
+            Text("Заполнить БД", fontSize = 18.sp, color = Color.White)
+        }
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(plants, key = {it.id}){ plant ->
+                Card(
+                    modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 8.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFF98FA9F)
-                        ),
-                        onClick = {navController.navigate("plant_info_screen/${plant.id}")},
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFFE8F5E9)
+                    ),
+                    onClick = { navController.navigate("plant_info_screen/${plant.id}") },
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
                     ) {
-                        Text(plant.name)
-                        Text(plant.description)
-                        Text("Тута картинка: ${plant.description}")
+                        Text(
+                            text = plant.name,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(text = plant.description)
+                        Text(text = "Тута картинка: ${plant.description}")
                     }
                 }
             }
