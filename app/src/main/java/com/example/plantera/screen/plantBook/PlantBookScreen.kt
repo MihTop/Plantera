@@ -68,7 +68,7 @@ fun PlantBookScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(text = plant.description)
-                        Text(text = "Тута картинка: ${plant.description}")
+                        Text(text = "Тута картинка: ${plant.imageUrl}")
                     }
                 }
             }

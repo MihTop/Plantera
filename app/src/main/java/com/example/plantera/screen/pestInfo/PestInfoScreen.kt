@@ -1,6 +1,7 @@
 package com.example.plantera.screen.pestInfo
 
 import androidx.compose.foundation.layout.Arrangement
+import com.example.plantera.utils.EmojiUtils
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -134,7 +135,7 @@ fun PestInfoScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = getPlantEmoji(plantName),
+                                text = EmojiUtils.getPlantEmoji(plantName),
                                 fontSize = MaterialTheme.typography.bodyLarge.fontSize
                             )
                             Text(
@@ -162,28 +163,5 @@ fun PestInfoScreen(
                 )
             }
         }
-    }
-}
-
-private fun getPlantEmoji(plantName: String): String {
-    return when (plantName) {
-        "Картофель" -> "🥔"
-        "Перец" -> "🌶️"
-        "Огурец" -> "🥒"
-        "Клубника" -> "🍓"
-        "Капуста" -> "🥬"
-        "Томат" -> "🍅"
-        "Лук" -> "🧅"
-        "Чеснок" -> "🧄"
-        "Морковь" -> "🥕"
-        "Яблоко" -> "🍎"
-        "Груша" -> "🍐"
-        "Виноград" -> "🍇"
-        "Арбуз" -> "🍉"
-        "Дыня" -> "🍈"
-        "Банан" -> "🍌"
-        "Апельсин" -> "🍊"
-        "Лимон" -> "🍋"
-        else -> "🌱"
     }
 }

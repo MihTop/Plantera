@@ -8,6 +8,9 @@ data class Plant(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     var name: String,
-    var description: String = "",
+    var genus: String,
+    var description: String,
+    var tips: String,
+    var soilTypeAndPh: String,
     var imageUrl: String? = null,
 )
