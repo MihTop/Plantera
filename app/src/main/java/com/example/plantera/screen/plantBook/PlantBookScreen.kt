@@ -22,7 +22,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +40,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.plantera.data.response.VegetationResponse
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,6 +49,15 @@ fun PlantBookScreen(
     viewModel: PlantBookViewModel = hiltViewModel()
 ){
     val plants by viewModel.plants.collectAsStateWithLifecycle(initialValue = emptyList())
+    val stationData by viewModel.stationData.collectAsStateWithLifecycle(initialValue = VegetationResponse("0",10,360))
+    val station = stationData ?: VegetationResponse("0", 10, 360)
+    val firstWeight = station.avgStartDay.toFloat() / 365
+    val lastWeight =  (365 - station.avgEndDay).toFloat() / 365
+    val vegWeight =  1f - firstWeight - lastWeight
+
+    LaunchedEffect(Unit) {
+        viewModel.loadStationByCode("228310")
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -138,26 +154,23 @@ fun PlantBookScreen(
                                     .height(20.dp)
                                     .padding(top = 4.dp)
                             ) {
-
                                 Box(
                                     modifier = Modifier
-                                        .weight(3f)
+                                        .weight(firstWeight)
                                         .fillMaxSize()
                                         .background(Color(0xFF2196F3))
                                         .clip(RoundedCornerShape(topStart = 4.dp, bottomStart = 4.dp))
                                 )
-
                                 Box(
                                     modifier = Modifier
-                                        .weight(6f)
+                                        .weight(vegWeight)
                                         .fillMaxSize()
                                         .background(Color.White)
                                         .border(1.dp, Color(0xFF2196F3))
                                 )
-
                                 Box(
                                     modifier = Modifier
-                                        .weight(3f)
+                                        .weight(lastWeight)
                                         .fillMaxSize()
                                         .background(Color(0xFF2196F3))
                                         .clip(RoundedCornerShape(topEnd = 4.dp, bottomEnd = 4.dp))
