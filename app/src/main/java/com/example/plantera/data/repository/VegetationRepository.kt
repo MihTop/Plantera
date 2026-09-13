@@ -1,15 +1,12 @@
 package com.example.plantera.data.repository
 
-import com.example.plantera.data.network.RetrofitClient
+import com.example.plantera.data.network.VegetationApiService
 import com.example.plantera.data.response.VegetationResponse
+import jakarta.inject.Inject
 
-class VegetationRepository {
-
-    private val apiService = RetrofitClient.apiService
-
-    suspend fun getAllVegetation(): List<VegetationResponse> {
-        return apiService.getAllVegetation()
-    }
+class VegetationRepository @Inject constructor(
+    private val apiService: VegetationApiService
+) {
 
     suspend fun getVegetationByStation(code: String): VegetationResponse {
         return apiService.getVegetationByStation(code)
@@ -23,4 +20,11 @@ class VegetationRepository {
     ): List<VegetationResponse> {
         return apiService.getVegetationByRegion(minLat, maxLat, minLon, maxLon)
     }
+
+    suspend fun getNearestStation(
+        lat: Double,
+        lon: Double,
+        maxDistanceKm: Double = 100.0
+    ): VegetationResponse =
+        apiService.getNearestStation(lat, lon, maxDistanceKm)
 }

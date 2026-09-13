@@ -18,6 +18,7 @@ material3 = "1.4.0"
 retrofit = "3.0.0"
 okhttp = "5.4.0"
 moshi = "1.15.2"
+playServicesLocation = "21.3.0"
 
 [libraries]
 # Core Android
@@ -77,6 +78,8 @@ okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhtt
 
 # Логгер для OkHttp
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 # Tests
 junit = { group = "junit", name = "junit", version.ref = "junit" }
