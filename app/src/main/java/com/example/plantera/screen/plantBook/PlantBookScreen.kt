@@ -6,34 +6,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,17 +32,23 @@ import com.example.plantera.data.response.VegetationResponse
 fun PlantBookScreen(
     navController: NavController,
     viewModel: PlantBookViewModel = hiltViewModel()
-){
+) {
     val context = LocalContext.current
     val plants by viewModel.plants.collectAsStateWithLifecycle(initialValue = emptyList())
-    val stationData by viewModel.stationData.collectAsStateWithLifecycle(initialValue = VegetationResponse("0",10,360))
+    val stationData by viewModel.stationData.collectAsStateWithLifecycle(
+        initialValue = VegetationResponse("0", 10, 360)
+    )
     val station = stationData
     val firstWeight = station.avgStartDay.toFloat() / 365
-    val lastWeight =  (365 - station.avgEndDay).toFloat() / 365
-    val vegWeight =  1f - firstWeight - lastWeight
+    val lastWeight = (365 - station.avgEndDay).toFloat() / 365
+    val vegWeight = 1f - firstWeight - lastWeight
 
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
+    val stationNames by viewModel.stationNames.collectAsStateWithLifecycle()
+
+    var showBottomSheet by remember { mutableStateOf(false) }
+    var showStationList by remember { mutableStateOf(false) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -97,9 +81,92 @@ fun PlantBookScreen(
         requestLocation()
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                showBottomSheet = false
+                showStationList = false
+            }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = "Выбор станции",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                if (!showStationList) {
+                    Button(
+                        onClick = {
+                            showBottomSheet = false
+                            requestLocation()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                    ) {
+                        Text("По геолокации")
+                    }
+
+                    Button(
+                        onClick = {
+                            showStationList = true
+                            if (stationNames.isEmpty()) {
+                                viewModel.loadAllStationNames()
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                    ) {
+                        Text("Из списка")
+                    }
+                } else {
+                    if (isLoading && stationNames.isEmpty()) {
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    }
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 400.dp)
+                    ) {
+                        items(stationNames) { name ->
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp),
+                                onClick = {
+                                    viewModel.loadStationByName(name)
+                                    showBottomSheet = false
+                                    showStationList = false
+                                }
+                            ) {
+                                Text(
+                                    text = name,
+                                    modifier = Modifier.padding(16.dp),
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                        }
+                    }
+
+                    TextButton(
+                        onClick = { showStationList = false },
+                        modifier = Modifier.padding(top = 8.dp)
+                    ) {
+                        Text("Назад")
+                    }
+                }
+            }
+        }
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
         if (isLoading) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
@@ -144,19 +211,19 @@ fun PlantBookScreen(
             Text("Заполнить БД", fontSize = 18.sp, color = Color.White)
         }
 
+        // ✅ Кнопка "Выбрать станцию" вместо "Геолока"
         Button(
-            onClick = {requestLocation()},
+            onClick = { showBottomSheet = true },
             modifier = Modifier
                 .fillMaxWidth(1f)
                 .padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
-            Text("Геолока", fontSize = 18.sp, color = Color.White)
+            Text("Выбрать станцию", fontSize = 18.sp, color = Color.White)
         }
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ) {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(plants, key = { it.id }) { plant ->
+                // ... без изменений, весь ваш код карточки растения
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -177,8 +244,7 @@ fun PlantBookScreen(
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Card(
-                                modifier = Modifier
-                                    .size(80.dp),
+                                modifier = Modifier.size(80.dp),
                                 shape = RoundedCornerShape(8.dp)
                             ) {
                                 AsyncImage(

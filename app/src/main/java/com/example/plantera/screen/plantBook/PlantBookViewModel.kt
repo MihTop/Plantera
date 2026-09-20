@@ -28,6 +28,9 @@ class PlantBookViewModel @Inject constructor(
     private val _stationData = MutableStateFlow(VegetationResponse("0", 10, 360))
     val stationData: StateFlow<VegetationResponse> = _stationData
 
+    private val _stationNames = MutableStateFlow<List<String>>(emptyList())
+    val stationNames: StateFlow<List<String>> = _stationNames
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
@@ -65,6 +68,36 @@ class PlantBookViewModel @Inject constructor(
             } catch (e: Exception) {
                 _error.value = "Ошибка: ${e.message}"
                 e.printStackTrace()
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun loadAllStationNames() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+            try {
+                val names = vegRepository.getAllStationNames()
+                _stationNames.value = names
+            } catch (e: Exception) {
+                _error.value = "Ошибка загрузки станций: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun loadStationByName(name: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+            try {
+                val data = vegRepository.getVegetationByStation(name)
+                _stationData.value = data
+            } catch (e: Exception) {
+                _error.value = "Ошибка загрузки станции: ${e.message}"
             } finally {
                 _isLoading.value = false
             }

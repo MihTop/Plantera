@@ -27,4 +27,8 @@ class VegetationRepository @Inject constructor(
         maxDistanceKm: Double = 100.0
     ): VegetationResponse =
         apiService.getNearestStation(lat, lon, maxDistanceKm)
+
+    suspend fun getAllStationNames(): List<String>{
+        return apiService.getStations()
+    }
 }
