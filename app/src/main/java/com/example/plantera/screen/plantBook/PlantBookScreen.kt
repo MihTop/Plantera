@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -46,9 +47,11 @@ fun PlantBookScreen(
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
     val stationNames by viewModel.stationNames.collectAsStateWithLifecycle()
+    val weatherData by viewModel.weatherData.collectAsStateWithLifecycle()
 
     var showBottomSheet by remember { mutableStateOf(false) }
     var showStationList by remember { mutableStateOf(false) }
+    var showWeatherDialog by remember { mutableStateOf(false) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -79,6 +82,44 @@ fun PlantBookScreen(
 
     LaunchedEffect(Unit) {
         requestLocation()
+    }
+
+    if (showWeatherDialog) {
+        AlertDialog(
+            onDismissRequest = { showWeatherDialog = false },
+            title = { Text("Прогноз на 3 дня") },
+            text = {
+                Column {
+                    weatherData?.forecast?.forecastday?.forEach { day ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = formatDate(day.date),
+                                fontWeight = FontWeight.Medium
+                            )
+
+                            AsyncImage(
+                                model = day.day.condition.icon,
+                                contentDescription = null,
+                                modifier = Modifier.size(32.dp)
+                            )
+
+                            Text(text = "${day.day.maxTempC.toInt()}° / ${day.day.minTempC.toInt()}°")
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showWeatherDialog = false }) {
+                    Text("Закрыть")
+                }
+            }
+        )
     }
 
     if (showBottomSheet) {
@@ -167,6 +208,7 @@ fun PlantBookScreen(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
+
         if (isLoading) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
@@ -192,12 +234,58 @@ fun PlantBookScreen(
             }
         }
 
-        Text(
-            text = "Станция: ${stationData.station}",
-            fontSize = 14.sp,
-            color = Color.Gray,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
-        )
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFFF1F8E9)
+            )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                weatherData?.current?.let { current ->
+                    AsyncImage(
+                        model = current.condition.icon,
+                        contentDescription = "Погода",
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clickable { showWeatherDialog = true }
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column(modifier = Modifier.clickable { showWeatherDialog = true }) {
+                        Text(
+                            text = "${current.tempC.toInt()}°C",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = current.condition.text,
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+                }
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Станция",
+                        fontSize = 11.sp,
+                        color = Color.Gray
+                    )
+                    Text(
+                        text = stationData.station,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        }
 
         Button(
             onClick = { viewModel.populateBD() },
@@ -205,17 +293,16 @@ fun PlantBookScreen(
                 containerColor = Color(0xFF5E7A3C)
             ),
             modifier = Modifier
-                .fillMaxWidth(1f)
+                .fillMaxWidth()
                 .padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
             Text("Заполнить БД", fontSize = 18.sp, color = Color.White)
         }
 
-        // ✅ Кнопка "Выбрать станцию" вместо "Геолока"
         Button(
             onClick = { showBottomSheet = true },
             modifier = Modifier
-                .fillMaxWidth(1f)
+                .fillMaxWidth()
                 .padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
             Text("Выбрать станцию", fontSize = 18.sp, color = Color.White)
@@ -223,7 +310,6 @@ fun PlantBookScreen(
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(plants, key = { it.id }) { plant ->
-                // ... без изменений, весь ваш код карточки растения
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -281,8 +367,10 @@ fun PlantBookScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
-                                val months = listOf("Янв", "Фев", "Мар", "Апр", "Май", "Июн",
-                                    "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек")
+                                val months = listOf(
+                                    "Янв", "Фев", "Мар", "Апр", "Май", "Июн",
+                                    "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"
+                                )
                                 months.forEach { month ->
                                     Text(
                                         text = month,
@@ -326,5 +414,21 @@ fun PlantBookScreen(
                 }
             }
         }
+    }
+}
+
+private fun formatDate(isoDate: String): String {
+    return try {
+        val parts = isoDate.split("-")
+        if (parts.size != 3) return isoDate
+        val month = parts[1].toInt()
+        val day = parts[2].toInt()
+        val months = listOf(
+            "янв", "фев", "мар", "апр", "май", "июн",
+            "июл", "авг", "сен", "окт", "ноя", "дек"
+        )
+        "$day ${months[month - 1]}"
+    } catch (e: Exception) {
+        isoDate
     }
 }

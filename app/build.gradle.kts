@@ -59,6 +59,8 @@ dependencies {
 
     // Compose BOM
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.material3)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
 
     // Compose UI (версии из BOM)
     implementation(libs.androidx.compose.ui)
@@ -67,7 +69,6 @@ dependencies {
 
     // Material 3
     implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.material3)
     implementation(libs.compose.material.icons.extended)
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
 
@@ -91,7 +92,6 @@ dependencies {
 
     // Coil
     implementation(libs.coil.compose)
-
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.retrofit.moshi.converter)

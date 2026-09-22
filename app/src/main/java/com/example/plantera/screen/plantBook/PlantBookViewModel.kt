@@ -6,11 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.plantera.data.plant.Plant
 import com.example.plantera.data.repository.GardenRepository
 import com.example.plantera.data.repository.VegetationRepository
+import com.example.plantera.data.repository.WeatherRepository
 import com.example.plantera.data.response.VegetationResponse
+import com.example.plantera.data.response.WeatherResponse
 import com.example.plantera.utils.LocationProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import jakarta.inject.Inject
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +22,8 @@ import kotlinx.coroutines.launch
 class PlantBookViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val repository: GardenRepository,
-    private val vegRepository: VegetationRepository
+    private val vegRepository: VegetationRepository,
+    private val weatherRepository: WeatherRepository
 ) : ViewModel() {
 
     val plants: Flow<List<Plant>> = repository.getAllPlants()
@@ -36,6 +39,9 @@ class PlantBookViewModel @Inject constructor(
 
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
+
+    private val _weatherData = MutableStateFlow<WeatherResponse?>(null)
+    val weatherData: StateFlow<WeatherResponse?> = _weatherData
 
     fun populateBD() {
         viewModelScope.launch {
@@ -55,6 +61,8 @@ class PlantBookViewModel @Inject constructor(
                 }
 
                 val (lat, lon) = location
+
+                loadWeather(lat, lon)
 
                 val data = vegRepository.getNearestStation(lat, lon, maxDistanceKm)
                 _stationData.value = data
@@ -103,4 +111,15 @@ class PlantBookViewModel @Inject constructor(
             }
         }
     }
+
+    fun loadWeather(lat: Double, lon: Double) {
+        viewModelScope.launch {
+            try {
+                _weatherData.value = weatherRepository.getForecast(lat, lon)
+            } catch (e: Exception) {
+
+            }
+        }
+    }
+
 }

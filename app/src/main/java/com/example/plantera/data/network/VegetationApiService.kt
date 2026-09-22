@@ -1,6 +1,7 @@
 package com.example.plantera.data.network
 
 import com.example.plantera.data.response.VegetationResponse
+import com.example.plantera.data.response.WeatherResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
