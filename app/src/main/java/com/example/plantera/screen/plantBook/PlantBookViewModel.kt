@@ -59,14 +59,9 @@ class PlantBookViewModel @Inject constructor(
                     _error.value = "Не удалось получить геолокацию"
                     return@launch
                 }
-
                 val (lat, lon) = location
-
-                loadWeather(lat, lon)
-
                 val data = vegRepository.getNearestStation(lat, lon, maxDistanceKm)
                 _stationData.value = data
-
             } catch (e: retrofit2.HttpException) {
                 if (e.code() == 404) {
                     _error.value = "Ближайшая станция дальше ${maxDistanceKm.toInt()} км"
@@ -112,14 +107,23 @@ class PlantBookViewModel @Inject constructor(
         }
     }
 
-    fun loadWeather(lat: Double, lon: Double) {
+    fun loadWeatherByLocation() {
         viewModelScope.launch {
             try {
-                _weatherData.value = weatherRepository.getForecast(lat, lon)
-            } catch (e: Exception) {
+                val location = LocationProvider.getCurrentLocation(context)
+                if (location == null) {
+                    android.util.Log.e("Weather", "Не удалось получить геолокацию")
+                    return@launch
+                }
+                val (lat, lon) = location
+                android.util.Log.d("Weather", "Координаты: $lat, $lon")
 
+                val data = weatherRepository.getForecast(lat, lon)
+                _weatherData.value = data
+                android.util.Log.d("Weather", "OK: ${data.current.tempC}°C, ${data.current.condition.text}")
+            } catch (e: Exception) {
+                android.util.Log.e("Weather", "Ошибка: ${e.javaClass.simpleName}: ${e.message}", e)
             }
         }
     }
-
 }

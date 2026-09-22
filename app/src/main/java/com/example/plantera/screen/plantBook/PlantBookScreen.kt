@@ -59,16 +59,18 @@ fun PlantBookScreen(
         val granted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
                 permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
         if (granted) {
+            viewModel.loadWeatherByLocation()
             viewModel.loadNearestStation()
         }
     }
 
-    fun requestLocation() {
+    LaunchedEffect(Unit) {
         val fineGranted = ContextCompat.checkSelfPermission(
             context, Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
 
         if (fineGranted) {
+            viewModel.loadWeatherByLocation()
             viewModel.loadNearestStation()
         } else {
             permissionLauncher.launch(
@@ -78,10 +80,6 @@ fun PlantBookScreen(
                 )
             )
         }
-    }
-
-    LaunchedEffect(Unit) {
-        requestLocation()
     }
 
     if (showWeatherDialog) {
@@ -102,13 +100,11 @@ fun PlantBookScreen(
                                 text = formatDate(day.date),
                                 fontWeight = FontWeight.Medium
                             )
-
                             AsyncImage(
-                                model = day.day.condition.icon,
+                                model = fixIconUrl(day.day.condition.icon),
                                 contentDescription = null,
                                 modifier = Modifier.size(32.dp)
                             )
-
                             Text(text = "${day.day.maxTempC.toInt()}° / ${day.day.minTempC.toInt()}°")
                         }
                     }
@@ -144,7 +140,9 @@ fun PlantBookScreen(
                     Button(
                         onClick = {
                             showBottomSheet = false
-                            requestLocation()
+                            // Загружаем и станцию, и погоду — независимо
+                            viewModel.loadNearestStation()
+                            viewModel.loadWeatherByLocation()
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -227,7 +225,10 @@ fun PlantBookScreen(
                         text = err,
                         color = MaterialTheme.colorScheme.onErrorContainer
                     )
-                    Button(onClick = { viewModel.loadNearestStation() }) {
+                    Button(onClick = {
+                        viewModel.loadNearestStation()
+                        viewModel.loadWeatherByLocation()
+                    }) {
                         Text("Повторить")
                     }
                 }
@@ -238,9 +239,7 @@ fun PlantBookScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp, vertical = 4.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color(0xFFF1F8E9)
-            )
+            colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F8E9))
         ) {
             Row(
                 modifier = Modifier
@@ -250,7 +249,7 @@ fun PlantBookScreen(
             ) {
                 weatherData?.current?.let { current ->
                     AsyncImage(
-                        model = current.condition.icon,
+                        model = fixIconUrl(current.condition.icon),
                         contentDescription = "Погода",
                         modifier = Modifier
                             .size(48.dp)
@@ -416,6 +415,9 @@ fun PlantBookScreen(
         }
     }
 }
+
+private fun fixIconUrl(url: String): String =
+    if (url.startsWith("//")) "https:$url" else url
 
 private fun formatDate(isoDate: String): String {
     return try {
