@@ -7,4 +7,5 @@ sealed class Screens(val route: String) {
     object BedInfo: Screens("bed_info_screen/{bedId}")
     object Timetable: Screens("timetable_screen")
     object BookPicker: Screens("book_picker_screen")
+    object Sensors: Screens("sensors_screen")
 }

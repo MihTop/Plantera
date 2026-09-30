@@ -9,6 +9,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -18,6 +21,9 @@ import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -42,6 +48,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun PlanteraApp() {
     val navController = rememberNavController()
+    var menuExpanded by remember { mutableStateOf(false) }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -75,6 +82,28 @@ fun PlanteraApp() {
                     }
                 )
             }
+            item(
+                icon = {
+                    Icon(Icons.Default.MoreVert, contentDescription = "Ещё")
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Датчики") },
+                            onClick = {
+                                menuExpanded = false
+                                navController.navigate(Screens.Sensors.route) {
+                                    launchSingleTop = true
+                                }
+                            }
+                        )
+                    }
+                },
+                label = { Text("Ещё") },
+                selected = currentRoute == Screens.Sensors.route,
+                onClick = { menuExpanded = true }
+            )
         }
     ) {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->

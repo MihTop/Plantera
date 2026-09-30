@@ -12,6 +12,7 @@ import com.example.plantera.screen.gardenInfo.GardenInfoScreen
 import com.example.plantera.screen.gardenList.GardenListScreen
 import com.example.plantera.screen.pestInfo.PestInfoScreen
 import com.example.plantera.screen.plantInfo.PlantInfoScreen
+import com.example.plantera.screen.sensors.SensorsScreen
 import com.example.plantera.screen.timetable.TimetableScreen
 
 @Composable
@@ -56,6 +57,9 @@ fun NavGraph(
         }
         composable(route = Screens.Timetable.route) {
             TimetableScreen(navController)
+        }
+        composable(route = Screens.Sensors.route) {
+            SensorsScreen()
         }
     }
 }
