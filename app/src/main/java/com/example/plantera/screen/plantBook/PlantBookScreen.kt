@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,6 +25,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.plantera.data.plant.Plant
 import com.example.plantera.data.response.VegetationResponse
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,9 +40,6 @@ fun PlantBookScreen(
         initialValue = VegetationResponse("0", 10, 360)
     )
     val station = stationData
-    val firstWeight = station.avgStartDay.toFloat() / 365
-    val lastWeight = (365 - station.avgEndDay).toFloat() / 365
-    val vegWeight = 1f - firstWeight - lastWeight
 
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
@@ -380,34 +377,11 @@ fun PlantBookScreen(
                                 }
                             }
 
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(20.dp)
-                                    .padding(top = 4.dp)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .weight(firstWeight)
-                                        .fillMaxSize()
-                                        .background(Color(0xFF2196F3))
-                                        .clip(RoundedCornerShape(topStart = 4.dp, bottomStart = 4.dp))
-                                )
-                                Box(
-                                    modifier = Modifier
-                                        .weight(vegWeight)
-                                        .fillMaxSize()
-                                        .background(Color.White)
-                                        .border(1.dp, Color(0xFF2196F3))
-                                )
-                                Box(
-                                    modifier = Modifier
-                                        .weight(lastWeight)
-                                        .fillMaxSize()
-                                        .background(Color(0xFF2196F3))
-                                        .clip(RoundedCornerShape(topEnd = 4.dp, bottomEnd = 4.dp))
-                                )
-                            }
+                            PlantSchedule(
+                                plant = plant,
+                                vegetationStartDay = station.avgStartDay,
+                                vegetationEndDay = station.avgEndDay
+                            )
                         }
                     }
                 }
@@ -432,5 +406,106 @@ private fun formatDate(isoDate: String): String {
         "$day ${months[month - 1]}"
     } catch (e: Exception) {
         isoDate
+    }
+}
+
+@Composable
+private fun PlantSchedule(
+    plant: Plant,
+    vegetationStartDay: Int,
+    vegetationEndDay: Int
+) {
+    val latestPlantingDay = vegetationEndDay - plant.daysToMaturity
+    val firstHarvestDay = vegetationStartDay + plant.daysToMaturity
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(3.dp)
+    ) {
+        NegativeTemperaturePeriod(vegetationStartDay, vegetationEndDay)
+        YearRange(
+            startDay = vegetationStartDay,
+            endDay = latestPlantingDay,
+            color = Color(0xFF66BB6A)
+        )
+        YearRange(
+            startDay = vegetationStartDay - plant.daysToSproutForTransplant,
+            endDay = latestPlantingDay - plant.daysToSproutForTransplant,
+            color = Color(0xFFFFB74D)
+        )
+        YearRange(
+            startDay = firstHarvestDay,
+            endDay = vegetationEndDay,
+            color = Color(0xFFAB47BC)
+        )
+    }
+}
+
+@Composable
+private fun YearRange(
+    startDay: Int,
+    endDay: Int,
+    color: Color
+) {
+    val safeStartDay = startDay.coerceIn(0, 365)
+    val safeEndDay = endDay.coerceIn(safeStartDay, 365)
+    val beforeWeight = safeStartDay.toFloat() / 365f
+    val rangeWeight = (safeEndDay - safeStartDay).toFloat() / 365f
+    val afterWeight = 1f - beforeWeight - rangeWeight
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(10.dp)
+    ) {
+        if (beforeWeight > 0f) Spacer(modifier = Modifier.weight(beforeWeight))
+        if (rangeWeight > 0f) {
+            Box(
+                modifier = Modifier
+                    .weight(rangeWeight)
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(color)
+            )
+        }
+        if (afterWeight > 0f) Spacer(modifier = Modifier.weight(afterWeight))
+    }
+}
+
+@Composable
+private fun NegativeTemperaturePeriod(
+    vegetationStartDay: Int,
+    vegetationEndDay: Int
+) {
+    val firstWeight = vegetationStartDay.coerceIn(0, 365).toFloat() / 365f
+    val lastWeight = (365 - vegetationEndDay.coerceIn(0, 365)).toFloat() / 365f
+    val vegetationWeight = 1f - firstWeight - lastWeight
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(10.dp)
+    ) {
+        if (firstWeight > 0f) {
+            Box(
+                modifier = Modifier
+                    .weight(firstWeight)
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(topStart = 4.dp, bottomStart = 4.dp))
+                    .background(Color(0xFF90CAF9))
+            )
+        }
+        if (vegetationWeight > 0f) Spacer(modifier = Modifier.weight(vegetationWeight))
+        if (lastWeight > 0f) {
+            Box(
+                modifier = Modifier
+                    .weight(lastWeight)
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(topEnd = 4.dp, bottomEnd = 4.dp))
+                    .background(Color(0xFF90CAF9))
+            )
+        }
     }
 }

@@ -12,5 +12,7 @@ data class Plant(
     var description: String,
     var tips: String,
     var soilTypeAndPh: String,
+    val daysToMaturity: Int,
+    val daysToSproutForTransplant: Int,
     var imageUrl: String? = null,
 )
