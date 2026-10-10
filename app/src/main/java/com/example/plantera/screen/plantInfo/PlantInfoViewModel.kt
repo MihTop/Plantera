@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 @HiltViewModel
 class PlantInfoViewModel @Inject constructor(
@@ -43,7 +44,7 @@ class PlantInfoViewModel @Inject constructor(
 
     fun insertBedPlant(bedId: Int){
         viewModelScope.launch {
-            repository.insertBedPlant(BedPlant(0,bedId,plantId))
+            repository.insertBedPlant(BedPlant(0,bedId,plantId, plantingDate = LocalDate.now().toString()))
         }
     }
 }

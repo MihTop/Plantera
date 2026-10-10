@@ -27,6 +27,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.plantera.data.plant.Plant
 import com.example.plantera.data.response.VegetationResponse
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -137,7 +138,6 @@ fun PlantBookScreen(
                     Button(
                         onClick = {
                             showBottomSheet = false
-                            // Загружаем и станцию, и погоду — независимо
                             viewModel.loadNearestStation()
                             viewModel.loadWeatherByLocation()
                         },
@@ -418,28 +418,33 @@ private fun PlantSchedule(
     val latestPlantingDay = vegetationEndDay - plant.daysToMaturity
     val firstHarvestDay = vegetationStartDay + plant.daysToMaturity
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 4.dp),
-        verticalArrangement = Arrangement.spacedBy(3.dp)
+            .padding(top = 4.dp)
     ) {
-        NegativeTemperaturePeriod(vegetationStartDay, vegetationEndDay)
-        YearRange(
-            startDay = vegetationStartDay,
-            endDay = latestPlantingDay,
-            color = Color(0xFF66BB6A)
-        )
-        YearRange(
-            startDay = vegetationStartDay - plant.daysToSproutForTransplant,
-            endDay = latestPlantingDay - plant.daysToSproutForTransplant,
-            color = Color(0xFFFFB74D)
-        )
-        YearRange(
-            startDay = firstHarvestDay,
-            endDay = vegetationEndDay,
-            color = Color(0xFFAB47BC)
-        )
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(3.dp)
+        ) {
+            NegativeTemperaturePeriod(vegetationStartDay, vegetationEndDay)
+            YearRange(
+                startDay = vegetationStartDay,
+                endDay = latestPlantingDay,
+                color = Color(0xFF66BB6A)
+            )
+            YearRange(
+                startDay = vegetationStartDay - plant.daysToSproutForTransplant,
+                endDay = latestPlantingDay - plant.daysToSproutForTransplant,
+                color = Color(0xFFFFB74D)
+            )
+            YearRange(
+                startDay = firstHarvestDay,
+                endDay = vegetationEndDay,
+                color = Color(0xFFAB47BC)
+            )
+        }
+        TodayMarker()
     }
 }
 
@@ -507,5 +512,26 @@ private fun NegativeTemperaturePeriod(
                     .background(Color(0xFF90CAF9))
             )
         }
+    }
+}
+@Composable
+private fun BoxScope.TodayMarker() {
+    val dayOfYear = LocalDate.now().dayOfYear
+    val weight = dayOfYear / 365f
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .matchParentSize()
+    ) {
+        if (weight > 0f) Spacer(modifier = Modifier.weight(weight))
+        Box(
+            modifier = Modifier
+                .width(1.dp)
+                .fillMaxHeight()
+                .background(Color.Black)
+        )
+        val afterWeight = 1f - weight
+        if (afterWeight > 0f) Spacer(modifier = Modifier.weight(afterWeight))
     }
 }

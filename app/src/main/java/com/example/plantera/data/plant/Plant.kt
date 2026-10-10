@@ -14,5 +14,5 @@ data class Plant(
     var soilTypeAndPh: String,
     val daysToMaturity: Int,
     val daysToSproutForTransplant: Int,
-    var imageUrl: String? = null,
+    var imageUrl: String? = null
 )
