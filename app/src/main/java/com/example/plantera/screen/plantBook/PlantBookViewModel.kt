@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.plantera.data.plant.Plant
+import com.example.plantera.data.prefs.VegetationPrefs
 import com.example.plantera.data.repository.GardenRepository
 import com.example.plantera.data.repository.VegetationRepository
 import com.example.plantera.data.repository.WeatherRepository
@@ -16,6 +17,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -23,13 +25,11 @@ class PlantBookViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val repository: GardenRepository,
     private val vegRepository: VegetationRepository,
-    private val weatherRepository: WeatherRepository
+    private val weatherRepository: WeatherRepository,
+    private val vegetationPrefs: VegetationPrefs
 ) : ViewModel() {
 
     val plants: Flow<List<Plant>> = repository.getAllPlants()
-
-    private val _stationData = MutableStateFlow(VegetationResponse("0", 10, 360))
-    val stationData: StateFlow<VegetationResponse> = _stationData
 
     private val _stationNames = MutableStateFlow<List<String>>(emptyList())
     val stationNames: StateFlow<List<String>> = _stationNames
@@ -42,6 +42,12 @@ class PlantBookViewModel @Inject constructor(
 
     private val _weatherData = MutableStateFlow<WeatherResponse?>(null)
     val weatherData: StateFlow<WeatherResponse?> = _weatherData
+
+    private val _vegetationStart = MutableStateFlow(vegetationPrefs.startDay)
+    val vegetationStart: StateFlow<Int> = _vegetationStart.asStateFlow()
+
+    private val _vegetationEnd = MutableStateFlow(vegetationPrefs.endDay)
+    val vegetationEnd: StateFlow<Int> = _vegetationEnd.asStateFlow()
 
     fun populateBD() {
         viewModelScope.launch {
@@ -61,7 +67,12 @@ class PlantBookViewModel @Inject constructor(
                 }
                 val (lat, lon) = location
                 val data = vegRepository.getNearestStation(lat, lon, maxDistanceKm)
-                _stationData.value = data
+                _vegetationStart.value = data.avgStartDay
+                _vegetationEnd.value = data.avgEndDay
+                vegetationPrefs.save(
+                    start = data.avgStartDay,
+                    end = data.avgEndDay
+                )
             } catch (e: retrofit2.HttpException) {
                 if (e.code() == 404) {
                     _error.value = "Ближайшая станция дальше ${maxDistanceKm.toInt()} км"
@@ -98,7 +109,12 @@ class PlantBookViewModel @Inject constructor(
             _error.value = null
             try {
                 val data = vegRepository.getVegetationByStation(name)
-                _stationData.value = data
+                _vegetationStart.value = data.avgStartDay
+                _vegetationEnd.value = data.avgEndDay
+                vegetationPrefs.save(
+                    start = data.avgStartDay,
+                    end = data.avgEndDay
+                )
             } catch (e: Exception) {
                 _error.value = "Ошибка загрузки станции: ${e.message}"
             } finally {

@@ -37,10 +37,9 @@ fun PlantBookScreen(
 ) {
     val context = LocalContext.current
     val plants by viewModel.plants.collectAsStateWithLifecycle(initialValue = emptyList())
-    val stationData by viewModel.stationData.collectAsStateWithLifecycle(
+    /*val stationData by viewModel.stationData.collectAsStateWithLifecycle(
         initialValue = VegetationResponse("0", 10, 360)
-    )
-    val station = stationData
+    )*/
 
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()
@@ -50,6 +49,9 @@ fun PlantBookScreen(
     var showBottomSheet by remember { mutableStateOf(false) }
     var showStationList by remember { mutableStateOf(false) }
     var showWeatherDialog by remember { mutableStateOf(false) }
+
+    val vegetationStart by viewModel.vegetationStart.collectAsStateWithLifecycle()
+    val vegetationEnd by viewModel.vegetationEnd.collectAsStateWithLifecycle()
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -275,7 +277,7 @@ fun PlantBookScreen(
                         color = Color.Gray
                     )
                     Text(
-                        text = stationData.station,
+                        text = "Добавить в SharedPref название станции",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
                     )
@@ -379,8 +381,8 @@ fun PlantBookScreen(
 
                             PlantSchedule(
                                 plant = plant,
-                                vegetationStartDay = station.avgStartDay,
-                                vegetationEndDay = station.avgEndDay
+                                vegetationStartDay = vegetationStart,
+                                vegetationEndDay = vegetationEnd
                             )
                         }
                     }
