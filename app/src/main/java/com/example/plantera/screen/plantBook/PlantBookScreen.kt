@@ -37,9 +37,6 @@ fun PlantBookScreen(
 ) {
     val context = LocalContext.current
     val plants by viewModel.plants.collectAsStateWithLifecycle(initialValue = emptyList())
-    /*val stationData by viewModel.stationData.collectAsStateWithLifecycle(
-        initialValue = VegetationResponse("0", 10, 360)
-    )*/
 
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val error by viewModel.error.collectAsStateWithLifecycle()

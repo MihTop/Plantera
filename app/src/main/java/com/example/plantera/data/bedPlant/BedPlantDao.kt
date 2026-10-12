@@ -37,6 +37,9 @@ interface BedPlantDao {
     @Query("UPDATE bed_plants SET posX = :posX, posY = :posY WHERE id = :id")
     suspend fun updatePosition(id: Int, posX: Int, posY: Int)
 
+    @Query("UPDATE bed_plants SET plantingDate = :date WHERE id = :id")
+    suspend fun updatePlantingDate(id: Int, date: String)
+
     @Query("UPDATE bed_plants SET posX = null, posY = null WHERE id = :bedPlantId")
     suspend fun removePosition(bedPlantId: Int)
 
