@@ -315,7 +315,6 @@ private fun PlantSchedule(
     } ?: vegetationStartDay
 
     val firstHarvestDay = plantingDay + plant.daysToMaturity
-    val latestPlantingDay = vegetationEndDay - plant.daysToMaturity
 
     Box(
         modifier = Modifier
